@@ -1,0 +1,66 @@
+<section class="student-form">
+  <h1>{{ studentId ? 'Edit Student' : 'Add Student' }}</h1>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      Name *
+      <input type="text" formControlName="name" />
+    </label>
+
+    <label>
+      Email *
+      <input type="email" formControlName="email" />
+    </label>
+
+    <label>
+      Phone
+      <input type="text" formControlName="phone" />
+    </label>
+
+    <label>
+      Roll Number
+      <input type="text" formControlName="rollNumber" />
+    </label>
+
+    <label>
+      Branch
+      <input type="text" formControlName="branch" placeholder="e.g. CSE" />
+    </label>
+
+    <label>
+      Graduation Year
+      <input type="number" formControlName="graduationYear" />
+    </label>
+
+    <label>
+      CGPA
+      <input type="number" step="0.01" min="0" max="10" formControlName="cgpa" />
+    </label>
+
+    <label>
+      Backlogs
+      <input type="number" min="0" formControlName="backlogs" />
+    </label>
+
+    <label>
+      Skills (comma-separated)
+      <input type="text" formControlName="skills" placeholder="Java, React, SQL" />
+    </label>
+
+    <label>
+      Resume URL
+      <input type="text" formControlName="resumeUrl" />
+    </label>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving...' : 'Save' }}
+      </button>
+      <a routerLink="/students">Cancel</a>
+    </div>
+  </form>
+</section>

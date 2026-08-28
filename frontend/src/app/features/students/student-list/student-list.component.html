@@ -1,0 +1,44 @@
+<section class="student-list">
+  <header>
+    <h1>Students</h1>
+    <a routerLink="/students/new" class="btn btn-primary">+ Add Student</a>
+  </header>
+
+  @if (loading()) {
+    <p>Loading...</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (students().length === 0) {
+    <p class="empty">No students yet. Add the first one.</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Branch</th>
+          <th>CGPA</th>
+          <th>Backlogs</th>
+          <th>Skills</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of students(); track s.id) {
+          <tr>
+            <td>{{ s.name }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.branch || '—' }}</td>
+            <td>{{ s.cgpa ?? '—' }}</td>
+            <td>{{ s.backlogs ?? 0 }}</td>
+            <td>{{ (s.skills || []).join(', ') || '—' }}</td>
+            <td class="actions">
+              <a [routerLink]="['/students', s.id, 'edit']">Edit</a>
+              <button type="button" (click)="remove(s.id)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
