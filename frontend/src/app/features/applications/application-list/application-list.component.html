@@ -1,0 +1,64 @@
+<section class="list-page">
+  <header>
+    <div>
+      <h1>Applications</h1>
+      <p class="subtitle">{{ applications().length }} application{{ applications().length === 1 ? '' : 's' }}</p>
+    </div>
+  </header>
+
+  @if (message()) {
+    <div class="banner banner-info">{{ message() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (applications().length === 0) {
+    <div class="empty-state">
+      <p>No applications yet.</p>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Job</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Applied</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of applications(); track a.id) {
+            <tr>
+              <td class="name-cell">{{ a.student.name }}</td>
+              <td>{{ a.job.title }}</td>
+              <td class="muted">{{ a.job.company?.name || '—' }}</td>
+              <td>
+                @if (auth.isTpo()) {
+                  <select [value]="a.status" (change)="updateStatus(a, $any($event.target).value)">
+                    @for (s of statuses; track s) {
+                      <option [value]="s">{{ s }}</option>
+                    }
+                  </select>
+                } @else {
+                  <span class="badge" [class.badge-success]="a.status === 'OFFERED'" [class.badge-warn]="a.status === 'REJECTED'">{{ a.status }}</span>
+                }
+              </td>
+              <td class="muted">{{ a.appliedAt ? (a.appliedAt | date: 'mediumDate') : '—' }}</td>
+              <td class="actions">
+                @if (auth.isTpo() && a.status === 'OFFERED') {
+                  <button type="button" class="placement-btn" (click)="recordPlacement(a)">Record Placement</button>
+                }
+                <button type="button" (click)="withdraw(a)">Withdraw</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

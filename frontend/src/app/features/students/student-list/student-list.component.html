@@ -4,65 +4,49 @@
       <h1>Students</h1>
       <p class="subtitle">{{ students().length }} student{{ students().length === 1 ? '' : 's' }}</p>
     </div>
-    <a routerLink="/students/new" class="btn btn-primary">+ Add Student</a>
+    @if (auth.isTpo()) {
+      <a routerLink="/students/new" class="btn btn-primary">+ Add Student</a>
+    }
   </header>
 
   @if (loading()) {
-    <p class="hint">Loading...</p>
+    <p>Loading...</p>
   } @else if (error()) {
-    <div class="banner banner-error">{{ error() }}</div>
+    <p class="error">{{ error() }}</p>
   } @else if (students().length === 0) {
-    <div class="empty-state">
-      <p>No students yet.</p>
-      <a routerLink="/students/new" class="btn btn-primary">Add your first student</a>
-    </div>
+    <p class="empty">No students yet.</p>
   } @else {
-    <div class="table-wrap">
-      <table>
-        <thead>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Branch</th>
+          <th>CGPA</th>
+          <th>Backlogs</th>
+          <th>Skills</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of students(); track s.id) {
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Branch</th>
-            <th>CGPA</th>
-            <th>Backlogs</th>
-            <th>Skills</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (s of students(); track s.id) {
-            <tr>
-              <td class="name-cell">{{ s.name }}</td>
-              <td class="muted">{{ s.email }}</td>
-              <td>{{ s.branch || '—' }}</td>
-              <td>
-                @if (s.cgpa != null) {
-                  <span class="badge" [class.badge-warn]="s.cgpa < 6">{{ s.cgpa }}</span>
-                } @else {
-                  —
-                }
-              </td>
-              <td>{{ s.backlogs ?? 0 }}</td>
-              <td class="skills-cell">
-                @for (skill of (s.skills || []).slice(0, 3); track skill) {
-                  <span class="chip">{{ skill }}</span>
-                }
-                @if ((s.skills || []).length > 3) {
-                  <span class="chip chip-more">+{{ (s.skills || []).length - 3 }}</span>
-                }
-                @if (!s.skills || s.skills.length === 0) {
-                  <span class="muted">—</span>
-                }
-              </td>
-              <td class="actions">
+            <td>{{ s.name }}</td>
+            <td>{{ s.email }}</td>
+            <td>{{ s.branch || '—' }}</td>
+            <td>{{ s.cgpa ?? '—' }}</td>
+            <td>{{ s.backlogs ?? 0 }}</td>
+            <td>{{ (s.skills || []).join(', ') || '—' }}</td>
+            <td class="actions">
+              <a [routerLink]="['/students', s.id, 'recommendations']">Recommendations</a>
+              @if (auth.isTpo()) {
                 <a [routerLink]="['/students', s.id, 'edit']">Edit</a>
                 <button type="button" (click)="remove(s.id)">Delete</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   }
 </section>

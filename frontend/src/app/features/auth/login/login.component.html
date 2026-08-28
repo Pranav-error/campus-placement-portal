@@ -1,0 +1,24 @@
+<section class="auth-form">
+  <h1>Log In</h1>
+
+  @if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">{{ saving() ? 'Logging in...' : 'Log In' }}</button>
+    </div>
+  </form>
+
+  <p class="switch">No account? <a routerLink="/register">Register</a></p>
+</section>

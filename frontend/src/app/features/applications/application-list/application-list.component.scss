@@ -1,0 +1,13 @@
+@import '../../../shared/styles/list-page';
+
+.list-page {
+  .banner-info {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .placement-btn {
+    color: var(--color-success) !important;
+  }
+}

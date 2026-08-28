@@ -1,0 +1,55 @@
+<section class="list-page">
+  <header>
+    <div>
+      <h1>Companies</h1>
+      <p class="subtitle">{{ companies().length }} compan{{ companies().length === 1 ? 'y' : 'ies' }}</p>
+    </div>
+    @if (auth.isTpo()) {
+      <a routerLink="/companies/new" class="btn btn-primary">+ Add Company</a>
+    }
+  </header>
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (companies().length === 0) {
+    <div class="empty-state">
+      <p>No companies yet.</p>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Industry</th>
+            <th>Contact</th>
+            <th>Website</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of companies(); track c.id) {
+            <tr>
+              <td class="name-cell">{{ c.name }}</td>
+              <td>{{ c.industry || '—' }}</td>
+              <td class="muted">{{ c.contactEmail || '—' }}</td>
+              <td>
+                @if (c.website) {
+                  <a [href]="c.website" target="_blank" rel="noopener">{{ c.website }}</a>
+                } @else { — }
+              </td>
+              <td class="actions">
+                @if (auth.isTpo()) {
+                  <a [routerLink]="['/companies', c.id, 'edit']">Edit</a>
+                  <button type="button" (click)="remove(c.id)">Delete</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

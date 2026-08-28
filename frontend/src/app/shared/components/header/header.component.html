@@ -8,5 +8,17 @@
     <a routerLink="/companies" routerLinkActive="active">Companies</a>
     <a routerLink="/jobs" routerLinkActive="active">Jobs</a>
     <a routerLink="/applications" routerLinkActive="active">Applications</a>
+    <a routerLink="/placements" routerLinkActive="active">Placements</a>
+    @if (auth.isTpo()) {
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    }
   </nav>
+  <div class="session">
+    @if (auth.isLoggedIn()) {
+      <span class="user-chip">{{ auth.currentUser()?.email }} · {{ auth.currentUser()?.role }}</span>
+      <button type="button" (click)="logout()">Log Out</button>
+    } @else {
+      <a routerLink="/login" class="login-link">Log In</a>
+    }
+  </div>
 </header>

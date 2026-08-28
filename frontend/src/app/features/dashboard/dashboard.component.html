@@ -1,0 +1,46 @@
+<section class="dashboard">
+  <h1>Dashboard</h1>
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (stats()) {
+    @let s = stats()!;
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-value">{{ s.totalStudents }}</span>
+        <span class="stat-label">Students</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ s.totalCompanies }}</span>
+        <span class="stat-label">Companies</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ s.totalJobs }}</span>
+        <span class="stat-label">Jobs</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ s.totalApplications }}</span>
+        <span class="stat-label">Applications</span>
+      </div>
+      <div class="stat-card highlight">
+        <span class="stat-value">{{ s.totalPlacements }}</span>
+        <span class="stat-label">Placements</span>
+      </div>
+    </div>
+
+    <h2>Applications by Status</h2>
+    <div class="status-bars">
+      @for (status of statusOrder; track status) {
+        <div class="status-row">
+          <span class="status-label">{{ status }}</span>
+          <div class="bar-track">
+            <div class="bar-fill" [style.width.%]="(s.applicationsByStatus[status] || 0) / maxStatusCount() * 100"></div>
+          </div>
+          <span class="status-count">{{ s.applicationsByStatus[status] || 0 }}</span>
+        </div>
+      }
+    </div>
+  }
+</section>

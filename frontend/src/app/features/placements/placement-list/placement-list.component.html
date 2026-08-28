@@ -1,0 +1,52 @@
+<section class="list-page">
+  <header>
+    <div>
+      <h1>Placement Records</h1>
+      <p class="subtitle">{{ placements().length }} placement{{ placements().length === 1 ? '' : 's' }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (placements().length === 0) {
+    <div class="empty-state">
+      <p>No placements recorded yet.</p>
+      <p class="hint">Record one from an OFFERED application on the Applications page.</p>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Package (LPA)</th>
+            <th>Offer Date</th>
+            <th>Joining Date</th>
+            @if (auth.isTpo()) { <th></th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of placements(); track p.id) {
+            <tr>
+              <td class="name-cell">{{ p.application.student.name }}</td>
+              <td>{{ p.application.job.company?.name || '—' }}</td>
+              <td>{{ p.application.job.title }}</td>
+              <td><span class="badge badge-success">{{ p.packageLpa ?? '—' }}</span></td>
+              <td class="muted">{{ p.offerDate ? (p.offerDate | date: 'mediumDate') : '—' }}</td>
+              <td class="muted">{{ p.joiningDate ? (p.joiningDate | date: 'mediumDate') : '—' }}</td>
+              @if (auth.isTpo()) {
+                <td class="actions">
+                  <button type="button" (click)="remove(p.id)">Delete</button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

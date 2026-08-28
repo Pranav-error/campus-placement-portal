@@ -25,5 +25,15 @@
       <h2>Applications</h2>
       <p>Track application status</p>
     </a>
+    <a class="card" routerLink="/placements">
+      <h2>Placements</h2>
+      <p>Final offer &amp; placement records</p>
+    </a>
+    @if (auth.isTpo()) {
+      <a class="card" routerLink="/dashboard">
+        <h2>Dashboard</h2>
+        <p>Placement drive overview</p>
+      </a>
+    }
   </section>
 </main>

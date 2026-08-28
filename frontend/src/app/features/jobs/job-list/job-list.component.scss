@@ -1,0 +1,23 @@
+@import '../../../shared/styles/list-page';
+
+.list-page {
+  .banner-info {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .apply-btn {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.82rem;
+
+    &:hover {
+      background: var(--color-primary-hover);
+    }
+  }
+}

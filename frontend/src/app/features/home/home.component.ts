@@ -1,6 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +12,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  auth = inject(AuthService);
   apiStatus = signal<string>('checking...');
 
   constructor(private http: HttpClient) {}

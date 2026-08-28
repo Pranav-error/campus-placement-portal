@@ -1,0 +1,45 @@
+<section class="auth-form">
+  <h1>Register</h1>
+
+  @if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" />
+      <span class="hint">At least 6 characters.</span>
+    </div>
+    <div class="field">
+      <label for="role">I am a</label>
+      <select id="role" formControlName="role">
+        <option value="STUDENT">Student</option>
+        <option value="TPO">Placement Officer (TPO)</option>
+      </select>
+    </div>
+
+    @if (form.get('role')?.value === 'STUDENT') {
+      <div class="field">
+        <label for="studentId">Link to student profile (optional)</label>
+        <select id="studentId" formControlName="studentId">
+          <option [ngValue]="null">— not linked yet —</option>
+          @for (s of students(); track s.id) {
+            <option [ngValue]="s.id">{{ s.name }} ({{ s.email }})</option>
+          }
+        </select>
+        <span class="hint">A TPO can add your profile first if it isn't listed yet.</span>
+      </div>
+    }
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">{{ saving() ? 'Creating account...' : 'Register' }}</button>
+    </div>
+  </form>
+
+  <p class="switch">Already have an account? <a routerLink="/login">Log in</a></p>
+</section>

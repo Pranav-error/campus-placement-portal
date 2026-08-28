@@ -1,0 +1,46 @@
+<section class="form-page">
+  <h1>{{ companyId ? 'Edit Company' : 'Add Company' }}</h1>
+
+  @if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="name">Name *</label>
+      <input id="name" type="text" formControlName="name" [class.invalid]="isInvalid('name')" />
+      @if (isInvalid('name')) {
+        <span class="field-error">Name is required.</span>
+      }
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="industry">Industry</label>
+        <input id="industry" type="text" formControlName="industry" placeholder="e.g. Software" />
+      </div>
+      <div class="field">
+        <label for="website">Website</label>
+        <input id="website" type="text" formControlName="website" placeholder="https://..." />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="contactEmail">Contact Email</label>
+      <input id="contactEmail" type="email" formControlName="contactEmail" [class.invalid]="isInvalid('contactEmail')" />
+      @if (isInvalid('contactEmail')) {
+        <span class="field-error">Enter a valid email address.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description"></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">{{ saving() ? 'Saving...' : 'Save' }}</button>
+      <a routerLink="/companies">Cancel</a>
+    </div>
+  </form>
+</section>

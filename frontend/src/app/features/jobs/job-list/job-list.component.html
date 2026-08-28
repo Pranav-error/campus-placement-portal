@@ -1,0 +1,74 @@
+<section class="list-page">
+  <header>
+    <div>
+      <h1>Jobs</h1>
+      <p class="subtitle">{{ jobs().length }} opening{{ jobs().length === 1 ? '' : 's' }}</p>
+    </div>
+    @if (auth.isTpo()) {
+      <a routerLink="/jobs/new" class="btn btn-primary">+ Post Job</a>
+    }
+  </header>
+
+  @if (applyMessage()) {
+    <div class="banner banner-info">{{ applyMessage() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (jobs().length === 0) {
+    <div class="empty-state">
+      <p>No jobs posted yet.</p>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>CTC (LPA)</th>
+            <th>Eligibility</th>
+            <th>Skills</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (j of jobs(); track j.id) {
+            <tr>
+              <td class="name-cell">{{ j.title }}</td>
+              <td>{{ j.company?.name || '—' }}</td>
+              <td class="muted">{{ j.location || '—' }}</td>
+              <td>{{ j.ctcLpa ?? '—' }}</td>
+              <td class="muted">
+                @if (j.minCgpa) { CGPA ≥ {{ j.minCgpa }}<br /> }
+                @if (j.maxBacklogs !== undefined && j.maxBacklogs !== null) { Backlogs ≤ {{ j.maxBacklogs }}<br /> }
+                @if (j.eligibleBranches?.length) { {{ j.eligibleBranches?.join(', ') }} }
+              </td>
+              <td class="chip-row">
+                @for (skill of (j.requiredSkills || []).slice(0, 3); track skill) {
+                  <span class="chip">{{ skill }}</span>
+                }
+              </td>
+              <td class="actions">
+                @if (auth.isStudent()) {
+                  @if (appliedJobIds().has(j.id!)) {
+                    <span class="badge badge-neutral">Applied</span>
+                  } @else {
+                    <button type="button" class="apply-btn" (click)="apply(j)">Apply</button>
+                  }
+                }
+                @if (auth.isTpo()) {
+                  <a [routerLink]="['/jobs', j.id, 'edit']">Edit</a>
+                  <button type="button" (click)="remove(j.id)">Delete</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

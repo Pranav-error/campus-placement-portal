@@ -1,8 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Student } from '../../../core/models/student.model';
 import { StudentService } from '../../../core/services/student.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-student-list',
@@ -12,6 +13,7 @@ import { StudentService } from '../../../core/services/student.service';
   styleUrl: './student-list.component.scss',
 })
 export class StudentListComponent implements OnInit {
+  auth = inject(AuthService);
   students = signal<Student[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
