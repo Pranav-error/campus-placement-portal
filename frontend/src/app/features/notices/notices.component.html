@@ -1,0 +1,46 @@
+<section class="notices-page">
+  <header>
+    <div>
+      <h1>Notices</h1>
+      <p class="subtitle">Announcements from the placement cell</p>
+    </div>
+    @if (auth.isTpo()) {
+      <button type="button" class="btn btn-primary" (click)="showForm.set(!showForm())">
+        {{ showForm() ? 'Cancel' : '+ Post Notice' }}
+      </button>
+    }
+  </header>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="post()" class="notice-form">
+      <input type="text" formControlName="title" placeholder="Title" />
+      <textarea formControlName="body" placeholder="Announcement details..."></textarea>
+      <button type="submit" [disabled]="posting()">{{ posting() ? 'Posting...' : 'Post' }}</button>
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="hint">Loading...</p>
+  } @else if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  } @else if (notices().length === 0) {
+    <div class="empty-state">
+      <p>No notices posted yet.</p>
+    </div>
+  } @else {
+    <div class="notice-list">
+      @for (n of notices(); track n.id) {
+        <article class="notice-card">
+          <div class="notice-head">
+            <h2>{{ n.title }}</h2>
+            @if (auth.isTpo()) {
+              <button type="button" class="delete-btn" (click)="remove(n.id)">Delete</button>
+            }
+          </div>
+          <p class="notice-body">{{ n.body }}</p>
+          <p class="notice-meta">{{ n.postedBy }} · {{ n.createdAt ? (n.createdAt | date: 'medium') : '' }}</p>
+        </article>
+      }
+    </div>
+  }
+</section>

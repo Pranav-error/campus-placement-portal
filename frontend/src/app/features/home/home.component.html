@@ -29,6 +29,10 @@
       <h2>Placements</h2>
       <p>Final offer &amp; placement records</p>
     </a>
+    <a class="card" routerLink="/notices">
+      <h2>Notices</h2>
+      <p>Placement cell announcements</p>
+    </a>
     @if (auth.isTpo()) {
       <a class="card" routerLink="/dashboard">
         <h2>Dashboard</h2>
@@ -36,4 +40,19 @@
       </a>
     }
   </section>
+
+  @if (latestNotices().length > 0) {
+    <section class="notices-widget">
+      <div class="widget-head">
+        <h2>Latest Notices</h2>
+        <a routerLink="/notices">View all →</a>
+      </div>
+      @for (n of latestNotices(); track n.id) {
+        <div class="notice-item">
+          <strong>{{ n.title }}</strong>
+          <span class="notice-date">{{ n.createdAt ? (n.createdAt | date: 'mediumDate') : '' }}</span>
+        </div>
+      }
+    </section>
+  }
 </main>

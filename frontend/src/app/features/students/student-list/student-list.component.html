@@ -2,51 +2,82 @@
   <header>
     <div>
       <h1>Students</h1>
-      <p class="subtitle">{{ students().length }} student{{ students().length === 1 ? '' : 's' }}</p>
+      <p class="subtitle">{{ filteredStudents().length }} of {{ students().length }} student{{ students().length === 1 ? '' : 's' }}</p>
     </div>
     @if (auth.isTpo()) {
-      <a routerLink="/students/new" class="btn btn-primary">+ Add Student</a>
+      <div class="header-actions">
+        <label class="btn btn-secondary import-btn">
+          {{ importing() ? 'Importing...' : 'Import CSV' }}
+          <input type="file" accept=".csv" (change)="onFileSelected($event)" [disabled]="importing()" hidden />
+        </label>
+        <a routerLink="/students/new" class="btn btn-primary">+ Add Student</a>
+      </div>
     }
   </header>
+
+  @if (importResult(); as result) {
+    <div class="banner" [class.banner-error]="result.errors.length > 0 && result.imported === 0" [class.banner-info]="result.imported > 0">
+      Imported {{ result.imported }}, skipped {{ result.skipped }}.
+      @if (result.errors.length > 0) {
+        <ul class="import-errors">
+          @for (e of result.errors.slice(0, 5); track e) {
+            <li>{{ e }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  <div class="filters">
+    <input type="text" [(ngModel)]="search" placeholder="Search by name, email, or skill..." class="search-input" />
+    <select [(ngModel)]="branchFilter" class="branch-select">
+      <option value="">All branches</option>
+      @for (b of branches(); track b) {
+        <option [value]="b">{{ b }}</option>
+      }
+    </select>
+  </div>
 
   @if (loading()) {
     <p>Loading...</p>
   } @else if (error()) {
     <p class="error">{{ error() }}</p>
-  } @else if (students().length === 0) {
-    <p class="empty">No students yet.</p>
+  } @else if (filteredStudents().length === 0) {
+    <p class="empty">No students match your filters.</p>
   } @else {
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Branch</th>
-          <th>CGPA</th>
-          <th>Backlogs</th>
-          <th>Skills</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (s of students(); track s.id) {
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td>{{ s.name }}</td>
-            <td>{{ s.email }}</td>
-            <td>{{ s.branch || '—' }}</td>
-            <td>{{ s.cgpa ?? '—' }}</td>
-            <td>{{ s.backlogs ?? 0 }}</td>
-            <td>{{ (s.skills || []).join(', ') || '—' }}</td>
-            <td class="actions">
-              <a [routerLink]="['/students', s.id, 'recommendations']">Recommendations</a>
-              @if (auth.isTpo()) {
-                <a [routerLink]="['/students', s.id, 'edit']">Edit</a>
-                <button type="button" (click)="remove(s.id)">Delete</button>
-              }
-            </td>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Branch</th>
+            <th>CGPA</th>
+            <th>Backlogs</th>
+            <th>Skills</th>
+            <th></th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (s of filteredStudents(); track s.id) {
+            <tr>
+              <td>{{ s.name }}</td>
+              <td>{{ s.email }}</td>
+              <td>{{ s.branch || '—' }}</td>
+              <td>{{ s.cgpa ?? '—' }}</td>
+              <td>{{ s.backlogs ?? 0 }}</td>
+              <td>{{ (s.skills || []).join(', ') || '—' }}</td>
+              <td class="actions">
+                <a [routerLink]="['/students', s.id, 'recommendations']">Recommendations</a>
+                @if (auth.isTpo()) {
+                  <a [routerLink]="['/students', s.id, 'edit']">Edit</a>
+                  <button type="button" (click)="remove(s.id)">Delete</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </section>

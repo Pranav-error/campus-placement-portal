@@ -2,7 +2,7 @@
   <header>
     <div>
       <h1>Jobs</h1>
-      <p class="subtitle">{{ jobs().length }} opening{{ jobs().length === 1 ? '' : 's' }}</p>
+      <p class="subtitle">{{ filteredJobs().length }} of {{ jobs().length }} opening{{ jobs().length === 1 ? '' : 's' }}</p>
     </div>
     @if (auth.isTpo()) {
       <a routerLink="/jobs/new" class="btn btn-primary">+ Post Job</a>
@@ -13,6 +13,18 @@
     <div class="banner banner-info">{{ applyMessage() }}</div>
   }
 
+  @if (!loading() && !error() && jobs().length > 0) {
+    <div class="filters">
+      <input type="text" [(ngModel)]="search" placeholder="Search by title, company, or skill..." class="search-input" />
+      <select [(ngModel)]="onlyEligibleBranch" class="branch-select">
+        <option value="">All branches</option>
+        @for (b of branches(); track b) {
+          <option [value]="b">{{ b }}</option>
+        }
+      </select>
+    </div>
+  }
+
   @if (loading()) {
     <p class="hint">Loading...</p>
   } @else if (error()) {
@@ -20,6 +32,10 @@
   } @else if (jobs().length === 0) {
     <div class="empty-state">
       <p>No jobs posted yet.</p>
+    </div>
+  } @else if (filteredJobs().length === 0) {
+    <div class="empty-state">
+      <p>No jobs match your filters.</p>
     </div>
   } @else {
     <div class="table-wrap">
@@ -36,7 +52,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (j of jobs(); track j.id) {
+          @for (j of filteredJobs(); track j.id) {
             <tr>
               <td class="name-cell">{{ j.title }}</td>
               <td>{{ j.company?.name || '—' }}</td>

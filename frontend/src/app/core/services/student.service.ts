@@ -30,4 +30,13 @@ export class StudentService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${API_BASE}/${id}`);
   }
+
+  bulkImport(file: File): Observable<{ imported: number; skipped: number; errors: string[] }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imported: number; skipped: number; errors: string[] }>(
+      `${API_BASE}/bulk-import`,
+      formData
+    );
+  }
 }

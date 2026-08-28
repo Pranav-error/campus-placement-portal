@@ -10,6 +10,7 @@ import { JobFormComponent } from './features/jobs/job-form/job-form.component';
 import { ApplicationListComponent } from './features/applications/application-list/application-list.component';
 import { PlacementListComponent } from './features/placements/placement-list/placement-list.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { NoticesComponent } from './features/notices/notices.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { tpoGuard } from './core/guards/tpo.guard';
@@ -35,5 +36,6 @@ export const routes: Routes = [
 
   { path: 'applications', component: ApplicationListComponent, canActivate: [authGuard] },
   { path: 'placements', component: PlacementListComponent },
+  { path: 'notices', component: NoticesComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [tpoGuard] },
 ];

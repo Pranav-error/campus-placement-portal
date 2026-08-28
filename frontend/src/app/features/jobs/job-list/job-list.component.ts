@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 import { Job } from '../../../core/models/job.model';
 import { JobService } from '../../../core/services/job.service';
@@ -9,7 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-job-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './job-list.component.html',
   styleUrl: './job-list.component.scss',
 })
@@ -23,6 +24,30 @@ export class JobListComponent implements OnInit {
   error = signal<string | null>(null);
   appliedJobIds = signal<Set<number>>(new Set());
   applyMessage = signal<string | null>(null);
+
+  search = signal('');
+  onlyEligibleBranch = signal('');
+
+  branches = computed(() => {
+    const set = new Set<string>();
+    for (const j of this.jobs()) {
+      (j.eligibleBranches || []).forEach((b) => set.add(b));
+    }
+    return Array.from(set).sort();
+  });
+
+  filteredJobs = computed(() => {
+    const term = this.search().trim().toLowerCase();
+    const branch = this.onlyEligibleBranch();
+    return this.jobs().filter((j) => {
+      const matchesTerm = !term
+        || j.title.toLowerCase().includes(term)
+        || (j.company?.name || '').toLowerCase().includes(term)
+        || (j.requiredSkills || []).some((s) => s.toLowerCase().includes(term));
+      const matchesBranch = !branch || (j.eligibleBranches || []).includes(branch);
+      return matchesTerm && matchesBranch;
+    });
+  });
 
   ngOnInit(): void {
     this.load();
