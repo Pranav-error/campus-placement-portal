@@ -44,6 +44,12 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <!-- dev-only in-memory DB, used by the "dev" profile when MySQL isn't set up locally -->
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <optional>true</optional>
