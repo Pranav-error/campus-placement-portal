@@ -35,6 +35,11 @@ export class StudentFormComponent implements OnInit {
     resumeUrl: [''],
   });
 
+  isInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {

@@ -1,8 +1,29 @@
 <main class="home">
-  <h1>Campus Placement Portal</h1>
-  <p>Centralized platform for student profiles, company &amp; job postings, eligibility, applications, and placement records.</p>
-  <p class="status">Backend API status: <strong>{{ apiStatus() }}</strong></p>
-  <nav>
-    <a routerLink="/students">Manage Students</a>
-  </nav>
+  <section class="hero">
+    <h1>Campus Placement Portal</h1>
+    <p>Centralized platform for student profiles, company &amp; job postings, eligibility, applications, and placement records.</p>
+    <span class="status-pill" [class.status-down]="apiStatus() === 'unreachable'">
+      <span class="dot"></span>
+      Backend: {{ apiStatus() }}
+    </span>
+  </section>
+
+  <section class="cards">
+    <a class="card" routerLink="/students">
+      <h2>Students</h2>
+      <p>Manage academic &amp; skill profiles</p>
+    </a>
+    <a class="card" routerLink="/companies">
+      <h2>Companies</h2>
+      <p>Company &amp; job postings</p>
+    </a>
+    <a class="card" routerLink="/jobs">
+      <h2>Jobs</h2>
+      <p>Eligibility &amp; openings</p>
+    </a>
+    <a class="card" routerLink="/applications">
+      <h2>Applications</h2>
+      <p>Track application status</p>
+    </a>
+  </section>
 </main>
