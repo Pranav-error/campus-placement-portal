@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { DashboardStats } from '../models/dashboard.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/dashboard';
+const API_BASE = `${environment.apiBaseUrl}/dashboard`;
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {

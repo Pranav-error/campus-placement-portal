@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { JobRecommendation } from '../models/recommendation.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class RecommendationService {
@@ -10,7 +11,7 @@ export class RecommendationService {
 
   getFor(studentId: number, limit = 5): Observable<JobRecommendation[]> {
     return this.http.get<JobRecommendation[]>(
-      `http://localhost:8080/api/students/${studentId}/recommendations`,
+      `${environment.apiBaseUrl}/students/${studentId}/recommendations`,
       { params: { limit } }
     );
   }

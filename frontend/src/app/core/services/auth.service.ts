@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 import { AuthResponse, LoginRequest, RegisterRequest, Role } from '../models/auth.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/auth';
+const API_BASE = `${environment.apiBaseUrl}/auth`;
 const STORAGE_KEY = 'cpp_auth';
 
 interface StoredAuth {

@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Job } from '../models/job.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/jobs';
+const API_BASE = `${environment.apiBaseUrl}/jobs`;
 
 @Injectable({ providedIn: 'root' })
 export class JobService {

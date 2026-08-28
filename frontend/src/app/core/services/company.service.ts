@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Company } from '../models/company.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/companies';
+const API_BASE = `${environment.apiBaseUrl}/companies`;
 
 @Injectable({ providedIn: 'root' })
 export class CompanyService {

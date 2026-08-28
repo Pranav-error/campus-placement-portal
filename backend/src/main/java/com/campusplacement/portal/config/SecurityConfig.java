@@ -1,7 +1,10 @@
 package com.campusplacement.portal.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -40,6 +43,9 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
+    @Value("${app.cors.allowed-origins:}")
+    private String extraAllowedOrigins;
+
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
@@ -71,8 +77,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Angular dev server origin; add the deployed frontend origin here later.
-        config.setAllowedOriginPatterns(List.of("http://localhost:4200", "https://*.vercel.app"));
+
+        List<String> origins = new ArrayList<>(List.of(
+                "http://localhost:4200",
+                "https://*.vercel.app",
+                "https://*.up.railway.app"));
+        if (extraAllowedOrigins != null && !extraAllowedOrigins.isBlank()) {
+            origins.addAll(Arrays.asList(extraAllowedOrigins.split(",")));
+        }
+        config.setAllowedOriginPatterns(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

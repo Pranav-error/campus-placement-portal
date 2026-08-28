@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Placement } from '../models/placement.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/placements';
+const API_BASE = `${environment.apiBaseUrl}/placements`;
 
 @Injectable({ providedIn: 'root' })
 export class PlacementService {

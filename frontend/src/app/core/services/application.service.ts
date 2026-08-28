@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ApplicationRequest, ApplicationStatus, JobApplication } from '../models/application.model';
+import { environment } from '../../../environments/environment';
 
-const API_BASE = 'http://localhost:8080/api/applications';
+const API_BASE = `${environment.apiBaseUrl}/applications`;
 
 @Injectable({ providedIn: 'root' })
 export class ApplicationService {
