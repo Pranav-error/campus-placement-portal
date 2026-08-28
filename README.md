@@ -55,6 +55,11 @@ campus-placement-portal/
 - **AI Recommendations** — per-student job ranking by skill-overlap (Jaccard similarity)
   between student skills and each job's required skills, plus an eligibility flag
 - **Admin Dashboard** — TPO-only view of totals and applications-by-status breakdown
+- **Notices** — TPO posts placement-cell announcements (drive dates, deadlines); visible
+  to everyone, with the 3 most recent shown on the home page
+- **CSV Bulk Import** — TPO uploads a CSV of students from the Students page instead of
+  adding them one by one (see format below)
+- **Search & Filter** — client-side search + branch filter on the Students and Jobs lists
 
 ## Access Model
 
@@ -64,6 +69,19 @@ campus-placement-portal/
 - Updating an application's **status** requires TPO.
 - Registering a STUDENT account can optionally link to an existing student profile
   (a TPO adds the profile first; the student then links to it on the Register page).
+
+## CSV Bulk Import Format
+
+Header row required, in this exact order (no quoted commas — skills are
+pipe-separated within their column):
+
+```
+name,email,phone,rollNumber,branch,graduationYear,cgpa,backlogs,skills
+Asha Rao,asha.rao@example.edu,,1CS21001,CSE,2026,8.7,0,Java|React|SQL
+```
+
+Rows with a missing name/email or a duplicate email are skipped and reported
+back individually — the rest of the file still imports.
 
 ## Getting Started (local dev)
 
@@ -127,8 +145,30 @@ The frontend's production API URL is set at build time in
 `fileReplacements` for the `production` configuration) — update it if the backend's
 Railway URL ever changes, then redeploy the frontend.
 
+## Demo Accounts (seeded in production)
+
+| Role | Email | Password |
+|---|---|---|
+| TPO | `tpo@demo.edu` | `password123` |
+| Student | `asha.rao@example.edu` | `studentpass` |
+| Student | `kiran.shah@example.edu` | `studentpass` |
+| Student | `meera.iyer@example.edu` | `studentpass` |
+| Student | `rohan.verma@example.edu` | `studentpass` |
+| Student | `priya.nair@example.edu` | `studentpass` |
+
+Change these before using this beyond a demo — the repo is private, but these
+credentials have write access to the live database.
+
+## Seed Data
+
+Production is seeded with 12 students (CSE/ISE/ECE/ME), 5 companies, 8 jobs with
+varied eligibility criteria, 8 applications spanning every status, 3 placement
+records, and 4 notices. Re-seed (idempotent — skips existing records) with:
+
+```bash
+python3 scripts/seed.py https://backend-production-0b5f.up.railway.app
+```
+
 ## Status
 
-✅ All core modules implemented and deployed. A demo TPO account exists in production
-(`tpo@demo.edu` / `password123`) for exploring TPO-only features — change its password
-or register your own account before using this for anything beyond a demo.
+✅ All core modules implemented, deployed, and seeded with realistic demo data.
