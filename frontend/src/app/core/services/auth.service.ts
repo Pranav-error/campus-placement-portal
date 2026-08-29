@@ -2,7 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
-import { AuthResponse, LoginRequest, RegisterRequest, Role } from '../models/auth.model';
+import { AuthResponse, CompleteProfileRequest, LoginRequest, RegisterRequest, Role } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
 
 const API_BASE = `${environment.apiBaseUrl}/auth`;
@@ -23,6 +23,7 @@ export class AuthService {
   isLoggedIn = computed(() => this.state() !== null);
   isTpo = computed(() => this.state()?.role === 'TPO');
   isStudent = computed(() => this.state()?.role === 'STUDENT');
+  needsProfile = computed(() => this.state()?.role === 'STUDENT' && !this.state()?.studentId);
 
   constructor(private http: HttpClient) {}
 
@@ -34,6 +35,12 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_BASE}/login`, request).pipe(
+      tap((res) => this.persist(res))
+    );
+  }
+
+  completeProfile(request: CompleteProfileRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${API_BASE}/complete-profile`, request).pipe(
       tap((res) => this.persist(res))
     );
   }

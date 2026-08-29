@@ -29,13 +29,36 @@ export class RegisterComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(6)]],
     role: ['STUDENT' as Role, Validators.required],
     studentId: [null as number | null],
+    name: [''],
   });
 
   ngOnInit(): void {
     this.studentService.getAll().subscribe((students) => this.students.set(students));
+
+    this.form.get('studentId')!.valueChanges.subscribe((studentId) => {
+      const nameControl = this.form.get('name')!;
+      if (this.form.get('role')!.value === 'STUDENT' && !studentId) {
+        nameControl.setValidators(Validators.required);
+      } else {
+        nameControl.clearValidators();
+      }
+      nameControl.updateValueAndValidity();
+    });
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!control && control.invalid && (control.dirty || control.touched);
   }
 
   submit(): void {
+    // Re-check name requirement in case role/studentId changed without a studentId valueChanges tick.
+    const nameControl = this.form.get('name')!;
+    if (this.form.get('role')!.value === 'STUDENT' && !this.form.get('studentId')!.value) {
+      nameControl.setValidators(Validators.required);
+      nameControl.updateValueAndValidity();
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -50,6 +73,7 @@ export class RegisterComponent implements OnInit {
       password: raw.password,
       role: raw.role,
       studentId: raw.role === 'STUDENT' && raw.studentId ? raw.studentId : undefined,
+      name: raw.role === 'STUDENT' && !raw.studentId ? raw.name : undefined,
     }).subscribe({
       next: () => this.router.navigate(['/']),
       error: (err) => {

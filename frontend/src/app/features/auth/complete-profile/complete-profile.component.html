@@ -1,0 +1,33 @@
+<section class="auth-form">
+  <h1>Complete Your Profile</h1>
+  <p class="hint" style="text-align:center; margin-bottom: 1rem;">
+    Your account doesn't have a student profile yet — add your name so you show up
+    in the Students list and can apply to jobs.
+  </p>
+
+  @if (error()) {
+    <div class="banner banner-error">{{ error() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="name">Full Name</label>
+      <input id="name" type="text" formControlName="name" [class.invalid]="isInvalid('name')" />
+      @if (isInvalid('name')) {
+        <span class="field-error">Name is required.</span>
+      }
+    </div>
+    <div class="field">
+      <label for="branch">Branch</label>
+      <input id="branch" type="text" formControlName="branch" placeholder="e.g. CSE" />
+    </div>
+    <div class="field">
+      <label for="rollNumber">Roll Number</label>
+      <input id="rollNumber" type="text" formControlName="rollNumber" />
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="saving()">{{ saving() ? 'Saving...' : 'Create My Profile' }}</button>
+    </div>
+  </form>
+</section>

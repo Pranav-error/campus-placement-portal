@@ -12,9 +12,16 @@ export interface RegisterRequest {
   password: string;
   role: Role;
   studentId?: number;
+  name?: string;
 }
 
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface CompleteProfileRequest {
+  name: string;
+  branch?: string;
+  rollNumber?: string;
 }

@@ -90,3 +90,21 @@
     }
   }
 }
+
+.profile-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  text-align: center;
+
+  a {
+    color: var(--color-danger);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}

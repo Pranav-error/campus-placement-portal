@@ -13,6 +13,7 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { NoticesComponent } from './features/notices/notices.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
+import { CompleteProfileComponent } from './features/auth/complete-profile/complete-profile.component';
 import { tpoGuard } from './core/guards/tpo.guard';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'complete-profile', component: CompleteProfileComponent, canActivate: [authGuard] },
 
   { path: 'students', component: StudentListComponent },
   { path: 'students/new', component: StudentFormComponent, canActivate: [tpoGuard] },

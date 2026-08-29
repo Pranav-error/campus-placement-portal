@@ -23,3 +23,11 @@
     }
   </div>
 </header>
+
+@if (auth.needsProfile()) {
+  <div class="profile-banner">
+    Your account has no student profile yet, so you won't show up in the Students
+    list or be able to apply to jobs.
+    <a routerLink="/complete-profile">Complete your profile →</a>
+  </div>
+}

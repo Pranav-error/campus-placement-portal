@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/complete-profile").authenticated()
                         .requestMatchers("/api/auth/**", "/api/health", "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/companies/**", "/api/jobs/**", "/api/placements/**", "/api/students/**").hasRole("TPO")

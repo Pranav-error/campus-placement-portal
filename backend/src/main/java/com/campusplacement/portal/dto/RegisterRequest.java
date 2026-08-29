@@ -20,8 +20,15 @@ public class RegisterRequest {
     @NotNull(message = "role is required")
     private Role role;
 
-    /** Required when role is STUDENT: links this login to an existing student profile. */
+    /** Optional when role is STUDENT: links this login to an existing student profile. */
     private Long studentId;
+
+    /**
+     * Optional when role is STUDENT and studentId is not given: a new student
+     * profile is created with this name and the account's email, and linked
+     * automatically. Ignored if studentId is provided.
+     */
+    private String name;
 
     public String getEmail() {
         return email;
@@ -53,6 +60,14 @@ public class RegisterRequest {
 
     public void setStudentId(Long studentId) {
         this.studentId = studentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
