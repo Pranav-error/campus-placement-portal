@@ -9,10 +9,6 @@
     }
   </header>
 
-  @if (applyMessage()) {
-    <div class="banner banner-info">{{ applyMessage() }}</div>
-  }
-
   @if (!loading() && !error() && jobs().length > 0) {
     <div class="filters">
       <input type="text" [(ngModel)]="search" placeholder="Search by title, company, or skill..." class="search-input" />
@@ -26,7 +22,7 @@
   }
 
   @if (loading()) {
-    <p class="hint">Loading...</p>
+    <app-loading-spinner />
   } @else if (error()) {
     <div class="banner banner-error">{{ error() }}</div>
   } @else if (jobs().length === 0) {
@@ -78,7 +74,7 @@
                 }
                 @if (auth.isTpo()) {
                   <a [routerLink]="['/jobs', j.id, 'edit']">Edit</a>
-                  <button type="button" (click)="remove(j.id)">Delete</button>
+                  <button type="button" (click)="remove(j.id, j.title)">Delete</button>
                 }
               </td>
             </tr>

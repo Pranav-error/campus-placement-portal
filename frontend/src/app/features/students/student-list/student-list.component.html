@@ -39,7 +39,7 @@
   </div>
 
   @if (loading()) {
-    <p>Loading...</p>
+    <app-loading-spinner />
   } @else if (error()) {
     <p class="error">{{ error() }}</p>
   } @else if (filteredStudents().length === 0) {
@@ -71,7 +71,7 @@
                 <a [routerLink]="['/students', s.id, 'recommendations']">Recommendations</a>
                 @if (auth.isTpo()) {
                   <a [routerLink]="['/students', s.id, 'edit']">Edit</a>
-                  <button type="button" (click)="remove(s.id)">Delete</button>
+                  <button type="button" (click)="remove(s.id, s.name)">Delete</button>
                 }
               </td>
             </tr>

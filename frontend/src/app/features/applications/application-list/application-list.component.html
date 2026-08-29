@@ -6,12 +6,8 @@
     </div>
   </header>
 
-  @if (message()) {
-    <div class="banner banner-info">{{ message() }}</div>
-  }
-
   @if (loading()) {
-    <p class="hint">Loading...</p>
+    <app-loading-spinner />
   } @else if (error()) {
     <div class="banner banner-error">{{ error() }}</div>
   } @else if (applications().length === 0) {

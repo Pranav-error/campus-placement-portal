@@ -6,24 +6,28 @@ import { Job } from '../../../core/models/job.model';
 import { JobService } from '../../../core/services/job.service';
 import { ApplicationService } from '../../../core/services/application.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-job-list',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LoadingSpinnerComponent],
   templateUrl: './job-list.component.html',
   styleUrl: './job-list.component.scss',
 })
 export class JobListComponent implements OnInit {
   private jobService = inject(JobService);
   private applicationService = inject(ApplicationService);
+  private confirmService = inject(ConfirmService);
+  private notify = inject(NotificationService);
   auth = inject(AuthService);
 
   jobs = signal<Job[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   appliedJobIds = signal<Set<number>>(new Set());
-  applyMessage = signal<string | null>(null);
 
   search = signal('');
   onlyEligibleBranch = signal('');
@@ -81,21 +85,33 @@ export class JobListComponent implements OnInit {
     const studentId = this.auth.currentUser()?.studentId;
     if (!studentId || !job.id) return;
 
-    this.applyMessage.set(null);
     this.applicationService.apply({ studentId, jobId: job.id }).subscribe({
       next: () => {
-        this.applyMessage.set(`Applied to ${job.title}.`);
+        this.notify.success(`Applied to ${job.title}.`);
         this.loadAppliedState();
       },
       error: (err) => {
-        this.applyMessage.set(err?.error?.error || 'Could not apply.');
+        this.notify.error(err?.error?.error || 'Could not apply.');
       },
     });
   }
 
-  remove(id: number | undefined): void {
+  async remove(id: number | undefined, title?: string): Promise<void> {
     if (!id) return;
-    if (!confirm('Delete this job posting?')) return;
-    this.jobService.delete(id).subscribe(() => this.load());
+    const ok = await this.confirmService.ask({
+      title: 'Delete job posting',
+      message: `Delete ${title || 'this job'}? This will fail if students have already applied — withdraw those applications first.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+
+    this.jobService.delete(id).subscribe({
+      next: () => {
+        this.notify.success(`${title || 'Job'} deleted.`);
+        this.load();
+      },
+      error: (err) => this.notify.error(err?.error?.error || 'Could not delete job.'),
+    });
   }
 }

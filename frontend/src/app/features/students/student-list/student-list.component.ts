@@ -5,16 +5,21 @@ import { FormsModule } from '@angular/forms';
 import { Student } from '../../../core/models/student.model';
 import { StudentService } from '../../../core/services/student.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-student-list',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LoadingSpinnerComponent],
   templateUrl: './student-list.component.html',
   styleUrl: './student-list.component.scss',
 })
 export class StudentListComponent implements OnInit {
   auth = inject(AuthService);
+  private confirmService = inject(ConfirmService);
+  private notify = inject(NotificationService);
   students = signal<Student[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
@@ -64,10 +69,23 @@ export class StudentListComponent implements OnInit {
     });
   }
 
-  remove(id: number | undefined): void {
+  async remove(id: number | undefined, name?: string): Promise<void> {
     if (!id) return;
-    if (!confirm('Delete this student?')) return;
-    this.studentService.delete(id).subscribe(() => this.load());
+    const ok = await this.confirmService.ask({
+      title: 'Delete student',
+      message: `Delete ${name || 'this student'}? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+
+    this.studentService.delete(id).subscribe({
+      next: () => {
+        this.notify.success(`${name || 'Student'} deleted.`);
+        this.load();
+      },
+      error: (err) => this.notify.error(err?.error?.error || 'Could not delete student.'),
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -83,10 +101,14 @@ export class StudentListComponent implements OnInit {
         this.importing.set(false);
         this.load();
         input.value = '';
+        if (result.imported > 0) {
+          this.notify.success(`Imported ${result.imported} student${result.imported === 1 ? '' : 's'}.`);
+        }
       },
       error: () => {
         this.importResult.set({ imported: 0, skipped: 0, errors: ['Import failed. Check the file format.'] });
         this.importing.set(false);
+        this.notify.error('Import failed. Check the file format.');
         input.value = '';
       },
     });

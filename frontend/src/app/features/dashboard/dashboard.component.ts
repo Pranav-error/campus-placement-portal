@@ -2,10 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { DashboardStats } from '../../core/models/dashboard.model';
 import { DashboardService } from '../../core/services/dashboard.service';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [LoadingSpinnerComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

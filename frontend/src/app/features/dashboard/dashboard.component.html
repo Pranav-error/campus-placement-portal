@@ -2,7 +2,7 @@
   <h1>Dashboard</h1>
 
   @if (loading()) {
-    <p class="hint">Loading...</p>
+    <app-loading-spinner />
   } @else if (error()) {
     <div class="banner banner-error">{{ error() }}</div>
   } @else if (stats()) {

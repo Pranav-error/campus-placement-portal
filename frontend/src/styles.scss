@@ -1,3 +1,19 @@
+// Angular Material theme — scoped to our brand color + Inter typography so
+// Material components (snackbar, dialog, icons) match the rest of the app.
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+      tertiary: mat.$azure-palette,
+    ),
+    typography: Inter,
+    density: 0,
+  ));
+}
+
 // Global design tokens & reset — shared across the app.
 :root {
   --color-bg: #f7f8fa;
@@ -49,4 +65,15 @@ a {
 
 button, input, select {
   font-family: inherit;
+}
+
+// Snackbar/dialog polish
+.cpp-snackbar-success {
+  --mdc-snackbar-container-color: #16a34a;
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+.cpp-snackbar-error {
+  --mdc-snackbar-container-color: #dc2626;
+  --mdc-snackbar-supporting-text-color: #fff;
 }

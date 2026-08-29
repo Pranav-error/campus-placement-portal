@@ -4,16 +4,21 @@ import { DatePipe } from '@angular/common';
 import { Placement } from '../../../core/models/placement.model';
 import { PlacementService } from '../../../core/services/placement.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-placement-list',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, LoadingSpinnerComponent],
   templateUrl: './placement-list.component.html',
   styleUrl: './placement-list.component.scss',
 })
 export class PlacementListComponent implements OnInit {
   private placementService = inject(PlacementService);
+  private confirmService = inject(ConfirmService);
+  private notify = inject(NotificationService);
   auth = inject(AuthService);
 
   placements = signal<Placement[]>([]);
@@ -38,9 +43,22 @@ export class PlacementListComponent implements OnInit {
     });
   }
 
-  remove(id: number | undefined): void {
+  async remove(id: number | undefined, name?: string): Promise<void> {
     if (!id) return;
-    if (!confirm('Delete this placement record?')) return;
-    this.placementService.delete(id).subscribe(() => this.load());
+    const ok = await this.confirmService.ask({
+      title: 'Delete placement record',
+      message: `Delete the placement record${name ? ' for ' + name : ''}?`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+
+    this.placementService.delete(id).subscribe({
+      next: () => {
+        this.notify.success('Placement record deleted.');
+        this.load();
+      },
+      error: (err) => this.notify.error(err?.error?.error || 'Could not delete placement.'),
+    });
   }
 }

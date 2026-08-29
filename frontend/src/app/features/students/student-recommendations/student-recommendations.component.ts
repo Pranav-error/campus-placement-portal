@@ -4,13 +4,14 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { JobRecommendation } from '../../../core/models/recommendation.model';
 import { RecommendationService } from '../../../core/services/recommendation.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { Student } from '../../../core/models/student.model';
 import { StudentService } from '../../../core/services/student.service';
 
 @Component({
   selector: 'app-student-recommendations',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink, DecimalPipe, LoadingSpinnerComponent],
   templateUrl: './student-recommendations.component.html',
   styleUrl: './student-recommendations.component.scss',
 })

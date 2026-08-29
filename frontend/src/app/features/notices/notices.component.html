@@ -20,7 +20,7 @@
   }
 
   @if (loading()) {
-    <p class="hint">Loading...</p>
+    <app-loading-spinner />
   } @else if (error()) {
     <div class="banner banner-error">{{ error() }}</div>
   } @else if (notices().length === 0) {
@@ -34,7 +34,7 @@
           <div class="notice-head">
             <h2>{{ n.title }}</h2>
             @if (auth.isTpo()) {
-              <button type="button" class="delete-btn" (click)="remove(n.id)">Delete</button>
+              <button type="button" class="delete-btn" (click)="remove(n.id, n.title)">Delete</button>
             }
           </div>
           <p class="notice-body">{{ n.body }}</p>

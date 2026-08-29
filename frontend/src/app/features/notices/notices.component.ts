@@ -5,17 +5,22 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Notice } from '../../core/models/notice.model';
 import { NoticeService } from '../../core/services/notice.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ConfirmService } from '../../core/services/confirm.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-notices',
   standalone: true,
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, LoadingSpinnerComponent],
   templateUrl: './notices.component.html',
   styleUrl: './notices.component.scss',
 })
 export class NoticesComponent implements OnInit {
   private noticeService = inject(NoticeService);
   private fb = inject(FormBuilder);
+  private confirmService = inject(ConfirmService);
+  private notify = inject(NotificationService);
   auth = inject(AuthService);
 
   notices = signal<Notice[]>([]);
@@ -58,15 +63,32 @@ export class NoticesComponent implements OnInit {
         this.form.reset();
         this.showForm.set(false);
         this.posting.set(false);
+        this.notify.success('Notice posted.');
         this.load();
       },
-      error: () => this.posting.set(false),
+      error: (err) => {
+        this.posting.set(false);
+        this.notify.error(err?.error?.error || 'Could not post notice.');
+      },
     });
   }
 
-  remove(id: number | undefined): void {
+  async remove(id: number | undefined, title?: string): Promise<void> {
     if (!id) return;
-    if (!confirm('Delete this notice?')) return;
-    this.noticeService.delete(id).subscribe(() => this.load());
+    const ok = await this.confirmService.ask({
+      title: 'Delete notice',
+      message: `Delete "${title || 'this notice'}"?`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
+
+    this.noticeService.delete(id).subscribe({
+      next: () => {
+        this.notify.success('Notice deleted.');
+        this.load();
+      },
+      error: (err) => this.notify.error(err?.error?.error || 'Could not delete notice.'),
+    });
   }
 }
