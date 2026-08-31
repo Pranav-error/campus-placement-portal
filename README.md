@@ -30,7 +30,7 @@ software that weren't explicitly asked for but round out the workflow:
 
 | Module | What it does |
 |---|---|
-| **Auth** | JWT login/register for two roles — STUDENT and TPO (Training & Placement Officer). A student account can link to an existing student profile. |
+| **Auth** | JWT login/register for two roles — STUDENT and TPO (Training & Placement Officer). Registering as a student either links to a profile a TPO already created, or auto-creates a new one from the name you enter. An existing account with no profile (e.g. one created before this existed) can self-serve one via **Complete Your Profile**, surfaced as a banner in the header. |
 | **Student Profiles** | Name, contact, roll number, branch, graduation year, CGPA, backlogs, skills, resume URL. TPO-managed CRUD; public read. |
 | **Companies & Jobs** | Company profiles (industry, website, contact); job postings (title, location, CTC, openings, deadline, description). |
 | **Eligibility Engine** | Each job carries min CGPA / max backlogs / eligible branches / graduation year. Enforced **server-side** the moment a student applies — an ineligible application is rejected with `422`, not just hidden in the UI. |
@@ -137,6 +137,11 @@ frontend if the backend's URL ever changes.
 >   module registered as a bean, or every GET on a nested resource 500s.
 > - Deleting a company/job that still has dependent rows threw a raw 500 until
 >   `GlobalExceptionHandler` got a `DataIntegrityViolationException` handler.
+> - The register form originally had no name field, and only a TPO could create a
+>   student profile — a student self-registering had no way to get their name (or
+>   any profile at all) into the system. Fixed with an auto-created profile on
+>   registration plus a `POST /api/auth/complete-profile` recovery path for
+>   accounts that registered before the fix.
 
 ## Local Development
 
@@ -236,4 +241,15 @@ Built deliberately, not overlooked — flagged here so they're a decision, not a
 ## Status
 
 ✅ All modules implemented, deployed, seeded with realistic demo data, and verified
-end-to-end against the live production API.
+end-to-end against the live production API (27/27 automated checks passing).
+
+**Fixed this session, deployed:** self-registered students had no name or profile
+anywhere (register form had no name field; only a TPO could create a profile). Now
+registering as a student either links to an existing TPO-created profile or
+auto-creates one from the name entered; a **Complete Your Profile** flow recovers
+any account that registered before this fix — it shows as a banner in the header
+for a logged-in account with no linked profile.
+
+**Open item for next session:** any account created before this fix (e.g. one made
+by manually calling the API without a name) still needs to go through
+**Complete Your Profile** once to get linked — it isn't retroactive.
