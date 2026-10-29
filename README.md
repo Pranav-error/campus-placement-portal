@@ -6,8 +6,8 @@ student profiles, company/job postings, eligibility rules, applications, and
 placement outcomes.
 
 **Live:**
-- App: https://frontend-production-3005.up.railway.app
-- API: https://backend-production-0b5f.up.railway.app/api
+- App: https://campus-placement-frontend-jdg6.onrender.com
+- API: https://campus-placement-backend-ui3o.onrender.com/api
 
 ## Problem Statement
 
@@ -21,7 +21,10 @@ placement outcomes.
 > recommend suitable job opportunities based on student skills and
 > qualifications.
 
-Required stack: **Angular** (frontend), **Java Spring Boot** (backend), **MySQL** (database).
+Required stack: **Angular** (frontend), **Java Spring Boot** (backend), **MySQL** (database;
+the live deployment runs **Postgres** instead — see [Live Deployment](#live-deployment) —
+since the free hosting tier used doesn't offer managed MySQL. Both are supported via Spring
+Data JPA; switching back is a driver/dialect change, not a rewrite).
 
 ## What Was Built
 
@@ -61,8 +64,8 @@ software that weren't explicitly asked for but round out the workflow:
 | UI | Angular Material (toasts, dialogs, spinners) + a hand-rolled design system (CSS custom properties, Inter typeface) |
 | Backend | Java 17, Spring Boot 3 (Web, Data JPA, Security, Validation) |
 | Auth | Spring Security + JWT (`jjwt`), BCrypt password hashing |
-| Database | MySQL in production; H2 in-memory for local dev (`dev` profile) |
-| Hosting | Railway — 3 services: backend (Docker), frontend (Docker + nginx), managed MySQL |
+| Database | Postgres in production; H2 in-memory for local dev (`dev` profile) |
+| Hosting | Render — 2 web services (backend + frontend, both Docker) + a managed free Postgres |
 
 ## Architecture
 
@@ -99,27 +102,26 @@ error bodies with the right HTTP status, instead of leaking stack traces as raw 
 
 ## Live Deployment
 
-- **App:** https://frontend-production-3005.up.railway.app
-- **API:** https://backend-production-0b5f.up.railway.app/api
+- **App:** https://campus-placement-frontend-jdg6.onrender.com
+- **API:** https://campus-placement-backend-ui3o.onrender.com/api
 
-Both are Docker deployments on Railway, backed by a managed MySQL instance on the
-same project. Redeploy either after a change with:
+Both are Docker web services on Render, backed by a managed free Postgres instance
+in the same workspace (`placement-db`). The backend + database are defined in
+`render.yaml` (a Render Blueprint); the frontend was created as a separate web
+service pointed at `frontend/` as its root directory, since its build needs the
+backend's URL baked in first (see below). Auto-deploy is on for both — a push to
+`main` redeploys automatically.
 
-```bash
-railway login
-railway link                                              # select this project
-railway up ./backend  --path-as-root --service backend
-railway up ./frontend --path-as-root --service frontend
-```
-
-Backend environment variables (set on the `backend` Railway service):
+Backend environment variables (set on the `campus-placement-backend` Render
+service; the DB-related ones are wired automatically via `render.yaml`'s
+`fromDatabase` references):
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | `jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC` |
-| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | `${{MySQL.MYSQLUSER}}` / `${{MySQL.MYSQLPASSWORD}}` |
-| `JWT_SECRET` | random secret for signing JWTs |
-| `CORS_ALLOWED_ORIGINS` | the frontend's deployed URL |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` | from the `placement-db` Postgres instance |
+| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | from the `placement-db` Postgres instance |
+| `JWT_SECRET` | random secret for signing JWTs (`generateValue: true` in the blueprint) |
+| `CORS_ALLOWED_ORIGINS` | the frontend's deployed URL — set manually, since `render.yaml` has no way to reference another service's URL with a scheme |
 
 The frontend's production API URL is a **build-time** value in
 `frontend/src/environments/environment.prod.ts`, swapped in via `angular.json`'s
@@ -127,11 +129,20 @@ The frontend's production API URL is a **build-time** value in
 frontend if the backend's URL ever changes.
 
 > **Gotchas hit and fixed along the way**, in case they recur:
-> - Railway's MySQL uses `caching_sha2_password` — the JDBC URL needs
->   `allowPublicKeyRetrieval=true` or the backend can't authenticate.
-> - The frontend's nginx container listens on port 80; Railway's edge proxy needs
->   that registered explicitly (`railway domain update <domain> --port 80`) or you
->   get a 502 even though the container is healthy.
+> - The original Railway deployment went dark after its trial expired (all three
+>   services showed `Failed`/`Offline`, no deployments since Aug 2026) — moved to
+>   Render, whose free DB tier is Postgres, not MySQL. Swapped the JDBC
+>   driver/dialect/connector accordingly.
+> - `provideAnimationsAsync()` was used in `app.config.ts` but `@angular/animations`
+>   was never added to `package.json` — `ng serve` tolerated the gap, but the
+>   production Docker build failed outright on `ng build`.
+> - The Google Fonts for DM Sans/Manrope were loaded via a component-scoped CSS
+>   `@import` in `home.component.scss`, which both render-blocks and counts against
+>   Angular's strict `anyComponentStyle` build budget — moved into `index.html`'s
+>   `<link>` alongside Inter, same as a normal font load.
+> - Render assigns each web service a dynamic `$PORT`; nginx's `nginx.conf` is now a
+>   template (`/etc/nginx/templates/default.conf.template`) substituted by the base
+>   image's docker-entrypoint at container start, instead of a hardcoded `listen 80`.
 > - Hibernate lazy-loaded associations (`Job.company`, `JobApplication.student/job`)
 >   can't be serialized by plain Jackson — needs the `jackson-datatype-hibernate6`
 >   module registered as a bean, or every GET on a nested resource 500s.
@@ -147,7 +158,7 @@ frontend if the backend's URL ever changes.
 
 ### Backend
 
-Fastest path — no local MySQL needed, uses an in-memory H2 database that resets
+Fastest path — no local Postgres needed, uses an in-memory H2 database that resets
 on every restart:
 
 ```bash
@@ -155,7 +166,7 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-Against real MySQL instead:
+Against real Postgres instead:
 
 ```bash
 cd backend
@@ -213,7 +224,7 @@ placement records, and 4 notices. Re-seed (idempotent — skips records that alr
 exist) with:
 
 ```bash
-python3 scripts/seed.py https://backend-production-0b5f.up.railway.app
+python3 scripts/seed.py https://campus-placement-backend-ui3o.onrender.com
 ```
 
 ## Verification
