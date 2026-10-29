@@ -1,33 +1,44 @@
 <header class="app-header">
-  <a class="brand" routerLink="/">
+  <a class="brand" routerLink="/" aria-label="Campus Placement Portal home">
     <span class="brand-mark">CP</span>
-    Campus Placement Portal
+    <span class="brand-copy"><strong>Campus Placement</strong><small>CAREER SERVICES</small></span>
   </a>
-  <nav>
-    <a routerLink="/notices" routerLinkActive="active">Notices</a>
-    <a routerLink="/students" routerLinkActive="active">Students</a>
-    <a routerLink="/companies" routerLinkActive="active">Companies</a>
-    <a routerLink="/jobs" routerLinkActive="active">Jobs</a>
-    <a routerLink="/applications" routerLinkActive="active">Applications</a>
-    <a routerLink="/placements" routerLinkActive="active">Placements</a>
+  <button class="menu-toggle" type="button" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen" aria-controls="primary-navigation" [attr.aria-label]="menuOpen ? 'Close navigation menu' : 'Open navigation menu'">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="primary-navigation" [class.nav-open]="menuOpen" aria-label="Primary navigation">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="closeMenu()">Overview</a>
+    <a routerLink="/jobs" routerLinkActive="active" (click)="closeMenu()">Jobs</a>
+    <a routerLink="/students" routerLinkActive="active" (click)="closeMenu()">Students</a>
+    <a routerLink="/companies" routerLinkActive="active" (click)="closeMenu()">Companies</a>
+    <a routerLink="/applications" routerLinkActive="active" (click)="closeMenu()">Applications</a>
+    <a routerLink="/placements" routerLinkActive="active" (click)="closeMenu()">Placements</a>
+    <a routerLink="/notices" routerLinkActive="active" (click)="closeMenu()">Notices</a>
     @if (auth.isTpo()) {
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
     }
+    <div class="mobile-session">
+      @if (auth.isLoggedIn()) {
+        <span class="user-chip">{{ auth.currentUser()?.email }} · {{ auth.currentUser()?.role }}</span>
+        <button type="button" (click)="logout()">Log Out</button>
+      } @else {
+        <a routerLink="/login" class="login-link" (click)="closeMenu()">Log In</a>
+      }
+    </div>
   </nav>
-  <div class="session">
+  <div class="session desktop-session">
     @if (auth.isLoggedIn()) {
-      <span class="user-chip">{{ auth.currentUser()?.email }} · {{ auth.currentUser()?.role }}</span>
+      <span class="user-chip" [title]="auth.currentUser()?.email || ''">{{ auth.currentUser()?.role }}</span>
       <button type="button" (click)="logout()">Log Out</button>
     } @else {
-      <a routerLink="/login" class="login-link">Log In</a>
+      <a routerLink="/login" class="login-link">Log In <span aria-hidden="true">↗</span></a>
     }
   </div>
 </header>
 
 @if (auth.needsProfile()) {
   <div class="profile-banner">
-    Your account has no student profile yet, so you won't show up in the Students
-    list or be able to apply to jobs.
-    <a routerLink="/complete-profile">Complete your profile →</a>
+    <span>Your account needs a student profile to apply for jobs.</span>
+    <a routerLink="/complete-profile">Complete your profile <span aria-hidden="true">→</span></a>
   </div>
 }

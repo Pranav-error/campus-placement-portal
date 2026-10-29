@@ -13,9 +13,19 @@ import { AuthService } from '../../../core/services/auth.service';
 export class HeaderComponent {
   auth = inject(AuthService);
   private router = inject(Router);
+  menuOpen = false;
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
+  }
 
   logout(): void {
     this.auth.logout();
+    this.closeMenu();
     this.router.navigate(['/']);
   }
 }

@@ -1,58 +1,99 @@
-<main class="home">
+<main class="home-shell">
   <section class="hero">
-    <h1>Campus Placement Portal</h1>
-    <p>Centralized platform for student profiles, company &amp; job postings, eligibility, applications, and placement records.</p>
-    <span class="status-pill" [class.status-down]="apiStatus() === 'unreachable'">
-      <span class="dot"></span>
-      Backend: {{ apiStatus() }}
-    </span>
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> CAMPUS CAREERS · PLACEMENT HUB</span>
+      <h1>Make your next move<br /><span>count.</span></h1>
+      <p class="hero-intro">One place for students to discover opportunities, for placement teams to manage drives, and for everyone to track the journey from application to offer.</p>
+      <div class="hero-actions">
+        <a routerLink="/jobs" class="button button-primary">Explore opportunities <span aria-hidden="true">↗</span></a>
+        @if (auth.isLoggedIn()) {
+          <a routerLink="/applications" class="button button-quiet">Track my applications</a>
+        } @else {
+          <a routerLink="/register" class="button button-quiet">Create a student account</a>
+        }
+      </div>
+      <div class="system-status" aria-live="polite">
+        <span class="status-indicator" [class.status-indicator-down]="apiStatus() === 'unreachable'" [class.status-indicator-loading]="apiStatus() === 'checking...'"></span>
+        <span>API status</span>
+        <strong>{{ apiStatus() === 'checking...' ? 'Connecting…' : apiStatus() === 'unreachable' ? 'Unavailable' : 'Connected' }}</strong>
+        @if (apiStatus() !== 'checking...' && apiStatus() !== 'unreachable') {
+          <span class="status-detail">{{ apiStatus() }}</span>
+        }
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="orbit orbit-one"></div>
+      <div class="orbit orbit-two"></div>
+      <div class="orbit orbit-three"></div>
+      <div class="art-center"><span class="art-spark">✳</span><span>YOUR<br />NEXT CHAPTER</span><b>↗</b></div>
+      <div class="float-card card-placement"><span class="mini-icon">✦</span><div><strong>Opportunity awaits</strong><small>Skills meet potential</small></div></div>
+      <div class="float-card card-growth"><span class="growth-bars"><i></i><i></i><i></i><i></i></span><div><strong>Keep moving</strong><small>One step at a time</small></div></div>
+      <div class="art-caption">DISCOVER · PREPARE · GET PLACED</div>
+    </div>
   </section>
 
-  <section class="cards">
-    <a class="card" routerLink="/students">
-      <h2>Students</h2>
-      <p>Manage academic &amp; skill profiles</p>
+  <section class="section-heading">
+    <div><span class="section-kicker">YOUR PLACEMENT WORKSPACE</span><h2>Everything, in one place.</h2><p>Pick up where you are in your placement journey.</p></div>
+    <span class="module-count">06 MODULES</span>
+  </section>
+
+  <section class="module-grid" aria-label="Placement portal modules">
+    <a class="module-card module-featured" routerLink="/jobs">
+      <span class="module-icon icon-lime">↗</span><span class="module-tag">FIND YOUR FIT</span>
+      <h3>Jobs &amp; opportunities</h3><p>Explore openings, check eligibility, and take the next step toward a role that fits your skills.</p>
+      <span class="module-link">Browse openings <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">01</span>
     </a>
-    <a class="card" routerLink="/companies">
-      <h2>Companies</h2>
-      <p>Company &amp; job postings</p>
+    <a class="module-card" routerLink="/students">
+      <span class="module-icon icon-lavender">◎</span><span class="module-tag">PEOPLE</span>
+      <h3>Student profiles</h3><p>Bring skills, academics, and career readiness into focus.</p><span class="module-link">View students <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">02</span>
     </a>
-    <a class="card" routerLink="/jobs">
-      <h2>Jobs</h2>
-      <p>Eligibility &amp; openings</p>
+    <a class="module-card" routerLink="/companies">
+      <span class="module-icon icon-peach">▦</span><span class="module-tag">EMPLOYERS</span>
+      <h3>Company directory</h3><p>Get to know the organizations hiring from campus.</p><span class="module-link">Meet employers <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">03</span>
     </a>
-    <a class="card" routerLink="/applications">
-      <h2>Applications</h2>
-      <p>Track application status</p>
+    <a class="module-card" routerLink="/applications">
+      <span class="module-icon icon-blue">↗</span><span class="module-tag">YOUR PROGRESS</span>
+      <h3>Applications</h3><p>See where every application stands, from submitted to final decision.</p><span class="module-link">Track progress <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">04</span>
     </a>
-    <a class="card" routerLink="/placements">
-      <h2>Placements</h2>
-      <p>Final offer &amp; placement records</p>
+    <a class="module-card" routerLink="/placements">
+      <span class="module-icon icon-yellow">✳</span><span class="module-tag">THE OUTCOME</span>
+      <h3>Placement records</h3><p>Celebrate offers and keep placement outcomes organized.</p><span class="module-link">View placements <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">05</span>
     </a>
-    <a class="card" routerLink="/notices">
-      <h2>Notices</h2>
-      <p>Placement cell announcements</p>
+    <a class="module-card" routerLink="/notices">
+      <span class="module-icon icon-mint">≋</span><span class="module-tag">STAY INFORMED</span>
+      <h3>Placement notices</h3><p>Stay up to date with upcoming drives, important dates, and announcements.</p><span class="module-link">Read notices <b aria-hidden="true">→</b></span>
+      <span class="module-watermark" aria-hidden="true">06</span>
     </a>
     @if (auth.isTpo()) {
-      <a class="card" routerLink="/dashboard">
-        <h2>Dashboard</h2>
-        <p>Placement drive overview</p>
+      <a class="module-card module-admin" routerLink="/dashboard">
+        <span class="module-icon icon-dark">▥</span><span class="module-tag">PLACEMENT TEAM</span>
+        <h3>Operations dashboard</h3><p>Review placement activity, application movement, and key totals in one view.</p><span class="module-link">Open dashboard <b aria-hidden="true">→</b></span>
       </a>
     }
   </section>
 
-  @if (latestNotices().length > 0) {
-    <section class="notices-widget">
-      <div class="widget-head">
-        <h2>Latest Notices</h2>
-        <a routerLink="/notices">View all →</a>
-      </div>
-      @for (n of latestNotices(); track n.id) {
-        <div class="notice-item">
-          <strong>{{ n.title }}</strong>
-          <span class="notice-date">{{ n.createdAt ? (n.createdAt | date: 'mediumDate') : '' }}</span>
-        </div>
+  <section class="notice-section">
+    <div class="notice-intro"><span class="section-kicker">FROM THE PLACEMENT CELL</span><h2>Good to know.</h2><p>Updates to help you stay ready.</p><a routerLink="/notices" class="text-link">All announcements <span aria-hidden="true">→</span></a></div>
+    <div class="notice-list">
+      @if (latestNotices().length > 0) {
+        @for (n of latestNotices(); track n.id; let i = $index) {
+          <a class="notice-row" routerLink="/notices">
+            <span class="notice-index">0{{ i + 1 }}</span>
+            <span class="notice-content"><strong>{{ n.title }}</strong><small>{{ n.body }}</small></span>
+            <span class="notice-date">{{ n.createdAt ? (n.createdAt | date: 'dd MMM yyyy') : 'LATEST' }}</span>
+            <span class="notice-arrow" aria-hidden="true">↗</span>
+          </a>
+        }
+      } @else {
+        <div class="notice-empty"><span class="notice-empty-mark">✳</span><div><strong>{{ apiStatus() === 'unreachable' ? 'Updates are temporarily unavailable' : 'You’re all caught up.' }}</strong><p>{{ apiStatus() === 'unreachable' ? 'Reconnect to the backend to load the latest placement notices.' : 'New placement-cell announcements will appear here.' }}</p></div></div>
       }
-    </section>
-  }
+    </div>
+  </section>
+
+  <footer class="home-footer"><span class="footer-brand"><span class="footer-mark">CP</span> Campus Placement Portal</span><span>Built for the next generation of campus careers.</span><a routerLink="/">Back to top ↑</a></footer>
 </main>
