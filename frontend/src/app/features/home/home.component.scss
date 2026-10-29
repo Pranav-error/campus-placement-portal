@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 :host { display: block; }
 .home-shell { --ink: #1c2e2a; --muted: #687773; --line: #e2e9e5; --paper: #f7f9f6; --green: #1f4a3c; color: var(--ink); max-width: 1360px; margin: 0 auto; padding: 0 42px 24px; font-family: 'DM Sans', var(--font-sans); }
 .hero { position: relative; display: grid; grid-template-columns: 1.02fr .98fr; align-items: center; min-height: 445px; overflow: hidden; margin: 28px 0 54px; padding: 54px 58px; background: #edf2ea; border: 1px solid #e1e9df; border-radius: 26px; }
