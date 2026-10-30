@@ -2,7 +2,18 @@
 
 **Project:** Campus Placement Portal  
 **Scope:** UI/UX refinement, responsive navigation, frontend tests, package cleanup, and developer documentation.  
-**Architecture retained:** Angular 19 frontend → Spring Boot 3 REST API → MySQL/H2 database.
+**Architecture retained:** Angular 19 frontend → Spring Boot 3 REST API → Postgres/H2 database.
+
+## 0. 2026-10-29: Railway → Render migration
+
+The original Railway deployment had gone dark (trial expired, all services down
+since 2026-08-28) — migrated to Render, which meant switching the production
+database from MySQL to Postgres (Render's free managed-DB tier). Along the way,
+fixed two real pre-existing bugs that only surfaced under a production build:
+a missing `@angular/animations` dependency (`provideAnimationsAsync()` was wired
+up in `app.config.ts` but the package was never added), and a component-scoped
+Google Fonts `@import` that both render-blocked and tripped Angular's CSS budget
+check. Full details, including the actual error output, in `DEPLOYMENT_LOG.md`.
 
 ## 1. Summary of changes
 
@@ -49,7 +60,7 @@ Spring Boot 3 REST API (port 8080, /api)
   | Spring Security + JWT filter + role checks
   v
 Database
-  +-- MySQL (persistent/production)
+  +-- Postgres (persistent/production)
   +-- H2 in-memory (local dev profile; reset on restart)
 ```
 
@@ -76,7 +87,7 @@ Database
 - Eligibility checks and duplicate-application rules are enforced server-side; frontend hiding alone is not treated as authorization.
 - JWT authentication is attached by an Angular HTTP interceptor.
 - Route guards improve navigation UX but do not replace backend authorization.
-- H2 makes local development possible without installing MySQL. Its data is ephemeral.
+- H2 makes local development possible without installing Postgres. Its data is ephemeral.
 
 ## 3. User journey
 
@@ -125,8 +136,8 @@ npm ci
 npm test -- --watch=false
 ```
 
-### Use MySQL instead of H2
-Configure `DATABASE_URL`, `DATABASE_USERNAME` and `DATABASE_PASSWORD` (or supported `DB_USERNAME`/`DB_PASSWORD`) for the backend, then start without the `dev` profile:
+### Use Postgres instead of H2
+Configure `DB_HOST`/`DB_PORT`/`DB_NAME`, `DATABASE_USERNAME` and `DATABASE_PASSWORD` (or supported `DB_USERNAME`/`DB_PASSWORD`) for the backend, then start without the `dev` profile:
 ```bash
 cd backend
 mvn spring-boot:run
@@ -148,4 +159,4 @@ See `TEST_REPORT.md`. This environment did not have Maven installed. The uploade
 - No backend API or database schema changes.
 - No role/authorization changes.
 - No additional notification provider or external service.
-- No claims of deployment or production smoke testing from this packaging pass.
+- (Superseded 2026-10-29: the app has since been deployed and smoke-tested live on Render — see `DEPLOYMENT_LOG.md`.)

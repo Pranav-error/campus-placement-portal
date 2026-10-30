@@ -128,6 +128,9 @@ The frontend's production API URL is a **build-time** value in
 `fileReplacements` for the `production` configuration — update it and redeploy the
 frontend if the backend's URL ever changes.
 
+See `DEPLOYMENT_LOG.md` for the full account of the Railway → Render migration,
+including the actual error output hit at each step.
+
 > **Gotchas hit and fixed along the way**, in case they recur:
 > - The original Railway deployment went dark after its trial expired (all three
 >   services showed `Failed`/`Offline`, no deployments since Aug 2026) — moved to
