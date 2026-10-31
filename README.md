@@ -112,9 +112,27 @@ service pointed at `frontend/` as its root directory, since its build needs the
 backend's URL baked in first (see below). Auto-deploy is on for both — a push to
 `main` redeploys automatically.
 
+```text
+GitHub (Pranav-error/campus-placement-portal, main)
+  |
+  | push -> auto-deploy (Render watches `main` on both services)
+  v
+Render workspace
+  +-- campus-placement-frontend (web service, Docker)
+  |     root dir: frontend/   Dockerfile builds `ng build --configuration production`
+  |     then serves the static output via nginx on Render's dynamic $PORT
+  |
+  +-- campus-placement-backend (web service, Docker)
+  |     root dir: backend/    Dockerfile is a Maven build -> JRE runtime image
+  |     reads DB_HOST/DB_PORT/DB_NAME/DATABASE_USERNAME/DATABASE_PASSWORD from the
+  |     database below via render.yaml `fromDatabase` references
+  |
+  +-- placement-db (managed Postgres, free tier)
+```
+
 Backend environment variables (set on the `campus-placement-backend` Render
 service; the DB-related ones are wired automatically via `render.yaml`'s
-`fromDatabase` references):
+`fromDatabase` references, so they never need to be typed in by hand):
 
 | Variable | Purpose |
 |---|---|
@@ -127,6 +145,28 @@ The frontend's production API URL is a **build-time** value in
 `frontend/src/environments/environment.prod.ts`, swapped in via `angular.json`'s
 `fileReplacements` for the `production` configuration — update it and redeploy the
 frontend if the backend's URL ever changes.
+
+**Redeploying by hand** (normally unnecessary — auto-deploy handles pushes to
+`main`):
+
+```bash
+render login                                   # one-time device-code auth
+render deploys create <service-id> --confirm   # service id from `render services`
+render logs --resources <service-id>           # tail build + runtime logs
+```
+
+**Rolling back a bad deploy:** open the service in the Render dashboard → Deploys
+tab → pick an earlier `live` deploy → Redeploy. There's no CLI rollback command;
+the dashboard list shows every past deploy's commit and status.
+
+**Cold starts:** both services are on Render's free tier, which spins a service
+down after a period of inactivity. The first request after a quiet stretch takes
+roughly 30-60 seconds while it spins back up — expected, not a bug, if a demo opens
+to a blank screen for a few seconds on the first load.
+
+**Database expiry:** Render's free Postgres plan expires 30 days after creation
+(shown as `expiresAt` in `render services --output json`) unless upgraded to a paid
+plan first. Re-seed with `scripts/seed.py` after any database recreation.
 
 See `DEPLOYMENT_LOG.md` for the full account of the Railway → Render migration,
 including the actual error output hit at each step.
